@@ -5,6 +5,7 @@ import Register from './containers/User/Register';
 import Login from './containers/User/Login';
 import Container from '@mui/material/Container';
 import AddForm from './containers/NewPostForm/AddForm';
+import Post from './containers/Post/Post';
 function App() {
   return (
     <>
@@ -16,6 +17,7 @@ function App() {
           <Routes>
             <Route path='/' element={<Home/>}/>
             <Route path='/newPost' element={<AddForm />}/>
+            <Route path='/post/:postId' element={<Post />}/>
             <Route path='/register' element={<Register />}/>
             <Route path='/login' element={<Login />}/>
             <Route path="*" element={<h1>Not found</h1>}/>

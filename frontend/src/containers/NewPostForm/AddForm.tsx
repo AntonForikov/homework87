@@ -51,6 +51,11 @@ const AddForm = () => {
 
   const onFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!post.image && post.description.trim() === '') {
+      alert('Image or description must be filled.');
+      return;
+    }
+
     if (post.title[0] === ' ' || post.title === '') {
       alert("You can't send post title started from whitespace or it can't be empty!");
     } else {
@@ -59,7 +64,6 @@ const AddForm = () => {
         navigate('/');
       } catch (e) {
         console.error(e);
-        alert('Please check URL or run backend server.');
       } finally {
         resetFileInput();
         setPost(initialMessage);
@@ -83,6 +87,8 @@ const AddForm = () => {
         </Grid>
         <Grid item xs>
           <TextField
+            rows={4}
+            multiline
             fullWidth
             variant="outlined"
             label="Description"

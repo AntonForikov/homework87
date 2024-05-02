@@ -1,37 +1,38 @@
-import {Alert, CircularProgress, Grid, Typography} from '@mui/material';
+import {Alert, CircularProgress, Grid} from '@mui/material';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
-import {selectArtistLoading, selectArtistList} from '../../store/artist/artistSlice';
 import {useEffect} from 'react';
-import {getArtists} from '../../store/artist/artistThunk';
 import CardItem from '../../components/CardItem/CardItem';
+import {selectPostList, selectPostListLoading} from '../../store/post/postSlice';
+import {getPostList} from '../../store/post/postThunk';
 
 
 const Home = () => {
-  const artistList = useAppSelector(selectArtistList);
+  const postList = useAppSelector(selectPostList);
   const dispatch = useAppDispatch();
-  const loading = useAppSelector(selectArtistLoading);
+  const loading = useAppSelector(selectPostListLoading);
 
   useEffect(() => {
-    dispatch(getArtists());
+    dispatch(getPostList());
   }, [dispatch]);
 
   return (
     <>
-      <Grid container justifyContent="center" alignItems="center" gap={3}>
-        <Grid container justifyContent='center' marginTop={3}><Typography variant="h4">Artists</Typography></Grid>
+      <Grid container justifyContent="center" alignItems="center" direction='column' gap={3} marginTop={3}>
         {loading
           ? <CircularProgress/>
-          : !loading && artistList.length < 1
+          : !loading && postList.length < 1
             ? <Alert severity="warning">There is no artists in database</Alert>
-            : artistList.map((artist) => {
+            : postList.map((post) => {
               return (
-                  <CardItem
-                    key={artist._id}
-                    id={artist._id}
-                    title={artist.name}
-                    image={artist.image}
-                    albumCard
-                  />
+                <CardItem
+                  key={post._id}
+                  id={post._id}
+                  title={post.title}
+                  username={post.user}
+                  image={post.image}
+                  date={post.date}
+                  commentCount={post.commentCount}
+                />
               );
             })
         }

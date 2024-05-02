@@ -6,6 +6,10 @@ export interface Post {
 
 export interface PostFromDb extends Post {
   _id: string;
+  image: string | null
+  user: string
+  date: string
+  commentCount: string
 }
 
 export interface UserFromDb {
