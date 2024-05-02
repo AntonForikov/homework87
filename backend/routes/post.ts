@@ -3,12 +3,15 @@ import mongoose from 'mongoose';
 import Post from '../models/post';
 import auth, {Auth} from '../middleware/auth';
 import {imagesUpload} from '../multer';
+import {ObjectId} from 'mongodb';
 
 const postRouter = express.Router();
 
 postRouter.post('/', auth, imagesUpload.single('image'), async (req: Auth,res, next) => {
   try {
     const {title, description} = req.body;
+
+    if (!description && !req.file) return res.status(400).send({error: 'You should provide Image or Description'});
 
     const postData = {
       user: req.user?._id,
@@ -30,9 +33,87 @@ postRouter.post('/', auth, imagesUpload.single('image'), async (req: Auth,res, n
 
 postRouter.get('/', async (_, res, next) => {
   try {
-    const postList = await Post.find();
+    const postList = await Post.aggregate(
+      [
+        {
+          $sort: {date: -1}
+        },
+        {
+          $lookup: {
+            from: "comments",
+            localField: "_id",
+            foreignField: "post",
+            as: "comments"
+          }
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "user",
+            foreignField: "_id",
+            as: "userList"
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            title: 1,
+            image: 1,
+            date: 1,
+            user: {$first: '$userList.username'},
+            commentCount: {$size: '$comments'}
+          }
+        },
+      ]
+    );
+
     return res.send(postList);
   } catch (e) {
+    next(e);
+  }
+});
+
+postRouter.get('/:id', async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    let _id: ObjectId;
+    try {
+      _id = new ObjectId(id);
+    } catch (e) {
+      return res.status(400).send({error: 'Request param  is not an ObjectId'});
+    }
+
+    const post = await Post.aggregate(
+      [
+        {
+          $match: { _id }
+        },
+        {
+          $lookup: {
+            from: "comments",
+            localField: "_id",
+            foreignField: "post",
+            as: "comments",
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            title: 1,
+            description: 1,
+            image: 1,
+            date: 1,
+            "comments.text": 1
+          }
+        },
+      ]
+    );
+
+    if (post.length === 0) return res.status(400).send({error: 'There is no such post in database.'});
+
+    return res.send(post);
+  } catch (e) {
+    if (e instanceof mongoose.Error.CastError) return res.status(400).send(e);
     next(e);
   }
 });
