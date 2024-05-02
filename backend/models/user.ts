@@ -4,30 +4,32 @@ import bcrypt from 'bcrypt';
 
 const SALT_WORK_FACTOR = 10;
 
-const UserSchema = new Schema<UserFields, UserModel, UserMethods>({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    validate: {
-      validator: async function (this: HydratedDocument<UserFields> ,username: string): Promise<boolean> {
-        if (!this.isModified('username')) return true;
+const UserSchema = new Schema<UserFields, UserModel, UserMethods>(
+  {
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      validate: {
+        validator: async function (this: HydratedDocument<UserFields>, username: string): Promise<boolean> {
+          if (!this.isModified('username')) return true;
 
-        const user: HydratedDocument<UserFields> | null = await User.findOne({username});
-        return !Boolean(user);
-      },
-      message: 'This user already exist'
+          const user: HydratedDocument<UserFields> | null = await User.findOne({username});
+          return !Boolean(user);
+        },
+        message: 'This user already exist'
+      }
+    },
+    password: {
+      type: String,
+      required: true
+    },
+    token: {
+      type: String,
+      required: true
     }
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  token: {
-    type: String,
-    required: true
-  }
-}, {versionKey: false});
+  }, {versionKey: false}
+);
 
 UserSchema.methods.checkPassword = function (password: string) {
   return bcrypt.compare(password, this.password);
@@ -51,6 +53,6 @@ UserSchema.set('toJSON', {
   }
 })
 
-const User = model<UserFields, UserModel>('User', UserSchema);
+const User = model<UserFields, UserModel>('user', UserSchema);
 
 export default User;
