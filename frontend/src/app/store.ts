@@ -1,10 +1,8 @@
 import {combineReducers, configureStore} from '@reduxjs/toolkit';
-import {artistReducer} from '../store/artist/artistSlice';
-import {albumReducer} from '../store/album/albumSlice';
-import {trackReducer} from '../store/track/trackSlice';
 import {userReducer} from '../store/user/userSlice';
 import storage from 'redux-persist/lib/storage';
 import {persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, persistStore} from 'redux-persist';
+import {postReducer} from '../store/post/postSlice';
 
 
 const userPersistConfig = {
@@ -14,9 +12,7 @@ const userPersistConfig = {
 };
 
 const rootReducer = combineReducers({
-  artists: artistReducer,
-  albums: albumReducer,
-  tracks: trackReducer,
+  posts: postReducer,
   users: persistReducer(userPersistConfig, userReducer)
 });
 

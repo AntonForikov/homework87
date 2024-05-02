@@ -1,46 +1,11 @@
-export interface ArtistFromDb {
-  _id: string;
-  name: string;
-  image: string | null;
+export interface Post {
+  title: string,
+  description: string,
+  image: File | null
 }
 
-export interface AlbumFromDb {
+export interface PostFromDb extends Post {
   _id: string;
-  title: string;
-  artist: string;
-  year: string;
-  image: string | null;
-  trackQuantity: string
-}
-
-export interface TrackFromDb {
-  _id: string;
-  title: string;
-  album: {
-    _id: string,
-    title: string,
-    artist: {
-      _id: string,
-      name: string
-    }
-  };
-  duration: string;
-  indexNumber: string
-}
-
-export interface TrackHistory {
-  _id: string;
-  user: string;
-  track: {
-    _id: string;
-    title: string;
-
-  };
-  artist: {
-    _id: string;
-    name: string;
-  };
-  date: string
 }
 
 export interface UserFromDb {
