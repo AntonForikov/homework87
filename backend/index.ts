@@ -14,11 +14,11 @@ const port = 8000;
 app.use(express.json());
 app.use(cors({origin: ['http://localhost:5173']}));
 app.use(express.static('public'));
-app.use('/artists', artistRouter);
-app.use('/albums', albumRouter);
-app.use('/tracks', trackRouter);
+// app.use('/artists', artistRouter);
+// app.use('/albums', albumRouter);
+// app.use('/tracks', trackRouter);
 app.use('/users', userRouter);
-app.use('/trackHistory', trackHistoryRoute);
+// app.use('/trackHistory', trackHistoryRoute);
 
 const run = async () => {
   await mongoose.connect(config.mongoose.db);

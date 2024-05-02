@@ -38,4 +38,25 @@ userRouter.post('/sessions', async (req, res, next) => {
   }
 });
 
+userRouter.delete('/sessions', async (req, res, next) => {
+  try {
+    const tokenData = req.get('Authorization');
+    const successMessage = {message: 'Successfully logout'};
+
+    if (!tokenData) return res.status(401).send({error: 'No token provided'});
+
+    const [_, token] = tokenData.split(' ');
+    const user = await User.findOne({token});
+
+    if (!user) return res.send(successMessage);
+
+    user.generateToken();
+    await user.save();
+
+    return res.send(successMessage);
+  } catch (e) {
+    return next(e);
+  }
+});
+
 export default userRouter;
