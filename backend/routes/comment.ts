@@ -33,4 +33,25 @@ commentRouter.post('/', auth, async (req: Auth, res,next) => {
   }
 });
 
+commentRouter.get('/', auth, async (req, res,next) => {
+  try {
+    const {postId} = req.query;
+    if (typeof postId === 'string') {
+      let id: ObjectId;
+      try {
+        id = new ObjectId(postId);
+      } catch (e) {
+        return res.status(400).send({error: 'Post is not and ObjectId '});
+      }
+
+      const comments = await Comment.find({post: id}, {_id: 1, user: 1, text: 1})
+        .populate('user', '-_id username');
+
+      return res.send(comments);
+    }
+  } catch (e) {
+    next(e);
+  }
+});
+
 export default commentRouter;
