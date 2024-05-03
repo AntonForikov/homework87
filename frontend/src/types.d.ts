@@ -12,6 +12,30 @@ export interface PostFromDb extends Post {
   commentCount: string
 }
 
+export interface PostComment {
+  _id: string;
+  user: {
+    username: string
+  },
+  text: string
+}
+
+export interface Comment {
+  text: string
+}
+
+export interface CommentToSend extends Comment{
+  post: string
+}
+
+export interface PostById {
+  _id: string;
+  title: string;
+  image: string | null;
+  description: string | null;
+  date: string;
+}
+
 export interface UserFromDb {
   _id: string;
   username: string;

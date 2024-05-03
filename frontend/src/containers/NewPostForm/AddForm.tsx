@@ -1,11 +1,12 @@
 import {Button, Grid, TextField} from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import React, {useRef, useState} from 'react';
-import {useAppDispatch} from '../../app/hooks';
+import React, {useEffect, useRef, useState} from 'react';
+import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import FileInput from './FileInput';
 import {useNavigate} from 'react-router-dom';
 import {Post} from '../../types';
 import {newPost} from '../../store/post/postThunk';
+import {selectUser} from '../../store/user/userSlice';
 
 const initialMessage: Post = {
   title: '',
@@ -14,10 +15,15 @@ const initialMessage: Post = {
 };
 const AddForm = () => {
   const dispatch = useAppDispatch();
+  const user = useAppSelector(selectUser);
   const [post, setPost] = useState<Post>(initialMessage);
   const [fileName, setFileName] = useState('');
   const resetButtonRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) navigate('/');
+  }, [user, navigate]);
 
   const resetFileInput = () => {
     if (resetButtonRef.current) {
