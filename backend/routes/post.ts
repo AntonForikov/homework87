@@ -4,6 +4,7 @@ import Post from '../models/post';
 import auth, {Auth} from '../middleware/auth';
 import {imagesUpload} from '../multer';
 import {ObjectId} from 'mongodb';
+import {PostById} from '../types';
 
 const postRouter = express.Router();
 
@@ -73,7 +74,7 @@ postRouter.get('/', async (_, res, next) => {
   }
 });
 
-postRouter.get('/:id', async (req, res, next) => {
+postRouter.get('/:id', auth, async (req, res, next) => {
   try {
     const {id} = req.params;
     let _id: ObjectId;
@@ -83,7 +84,7 @@ postRouter.get('/:id', async (req, res, next) => {
       return res.status(400).send({error: 'Request param  is not an ObjectId'});
     }
 
-    const post = await Post.aggregate(
+    const post: PostById[] = await Post.aggregate(
       [
         {
           $match: { _id }
@@ -103,15 +104,13 @@ postRouter.get('/:id', async (req, res, next) => {
             description: 1,
             image: 1,
             date: 1,
-            "comments.text": 1
           }
         },
       ]
     );
-
     if (post.length === 0) return res.status(400).send({error: 'There is no such post in database.'});
 
-    return res.send(post);
+    return res.send(post[0]);
   } catch (e) {
     if (e instanceof mongoose.Error.CastError) return res.status(400).send(e);
     next(e);
