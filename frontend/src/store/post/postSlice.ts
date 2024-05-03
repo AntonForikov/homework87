@@ -1,17 +1,25 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {RootState} from '../../app/store';
-import {PostFromDb} from '../../types';
-import {getPostList} from './postThunk';
+import {PostById, PostComment, PostFromDb} from '../../types';
+import {getComments, getPostById, getPostList} from './postThunk';
 
 
 interface UserState {
   postList: PostFromDb[];
-  postLoading: boolean
+  postListLoading: boolean;
+  postById: PostById | null;
+  postByIdLoading: boolean;
+  comments: PostComment[];
+  commentsLoading: boolean
 }
 
 const initialState: UserState = {
   postList: [],
-  postLoading: false
+  postListLoading: false,
+  postById: null,
+  postByIdLoading: false,
+  comments: [],
+  commentsLoading: false,
 };
 
 const postSlice = createSlice({
@@ -20,26 +28,36 @@ const postSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(getPostList.pending, (state) => {
-      state.postLoading = true;
+      state.postListLoading = true;
     }).addCase(getPostList.fulfilled, (state, {payload: postList}) => {
-      state.postLoading = false;
+      state.postListLoading = false;
       state.postList = postList;
     }).addCase(getPostList.rejected, (state) => {
-      state.postLoading = false;
+      state.postListLoading = false;
     });
-    // builder.addCase(login.pending, (state) => {
-    //   state.loginLoading = true;
-    //   state.loginError = null;
-    // }).addCase(login.fulfilled, (state, {payload: user}) => {
-    //   state.loginLoading = false;
-    //   state.user = user;
-    // }).addCase(login.rejected, (state, {payload: error}) => {
-    //   state.loginLoading = false;
-    //   state.loginError = error || null;
-    // });
+    builder.addCase(getPostById.pending, (state) => {
+      state.postByIdLoading = true;
+    }).addCase(getPostById.fulfilled, (state, {payload: post}) => {
+      state.postByIdLoading = false;
+      state.postById = post;
+    }).addCase(getPostById.rejected, (state) => {
+      state.postByIdLoading = false;
+    });
+    builder.addCase(getComments.pending, (state) => {
+      state.commentsLoading = true;
+    }).addCase(getComments.fulfilled, (state, {payload: commentList}) => {
+      state.commentsLoading = false;
+      state.comments = commentList;
+    }).addCase(getComments.rejected, (state) => {
+      state.commentsLoading = false;
+    });
   }
 });
 
 export const postReducer = postSlice.reducer;
 export const selectPostList = (state: RootState) => state.posts.postList;
-export const selectPostListLoading = (state: RootState) => state.posts.postLoading;
+export const selectPostById = (state: RootState) => state.posts.postById;
+export const selectComments = (state: RootState) => state.posts.comments;
+export const selectPostListLoading = (state: RootState) => state.posts.postListLoading;
+export const selectPostByIdLoading = (state: RootState) => state.posts.postByIdLoading;
+export const selectCommentsLoading = (state: RootState) => state.posts.commentsLoading;
